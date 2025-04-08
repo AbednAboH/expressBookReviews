@@ -13,7 +13,7 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  const books_string=JSON.stringify(books,null,2);
+  const books_string=JSON.stringify(books,null,4);
   return res.status(200).send(books_string);
 });
 
@@ -23,7 +23,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
   const isbn=req.params.isbn;
   const book=books[isbn];
   if (book){
-    res.status(200).json(book);
+    res.status(200).send(JSON.stringify(book,null,4));
   }
   else {
     res.status(404).json({mssage: "Book not found!"});
@@ -33,26 +33,37 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   const author=req.params.author;
-  const booksByAuthor=[]
-  for (const book in books){
-    if (book.author===author){
-        booksByAuthor.push(book);
-        console.log(book);
+  const booksByAuthor={}
+  for (const isbn in books){
+    if (books[isbn].author===author){
+        booksByAuthor[isbn]=books[isbn]; 
     }
   }
-  if (books){
-    res.status(200).send(JSON.stringify(booksByAuthor,null,4));
+  if (booksByAuthor){
+    return res.status(200).send(JSON.stringify(booksByAuthor,null,4));
   }
   else{
-    res.status(404).JSON({message: `Books by author ${author} not found`});
+    return res.status(404).send({message: `Books by author ${author} not found`});
   }
-  return res.status(300).json({message: "Yet to be implemented"});
+
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const title=req.params.title;
+  const booksByTitle={}
+  for (const isbn in books){
+    if (books[isbn].title===title){
+        booksByTitle[isbn]=books[isbn]; 
+    }
+  }
+  if (booksByTitle){
+    return res.status(200).send(JSON.stringify(booksByTitle,null,4));
+  }
+  else{
+    return res.status(404).send({message: `Books by title ${title} not found`});
+  }
 });
 
 //  Get book review
